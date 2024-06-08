@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { firebaseAuth } from "../../lib/firebase";
 import { GithubAuthProvider, User, signInWithPopup, signOut } from "firebase/auth";
+import { createUser } from "@/lib/database";
 
 type AuthContext = {
   user: User | null;
@@ -29,6 +30,13 @@ function useProvideAuth(): AuthContext {
     signInWithPopup(firebaseAuth, provider).then((result) => {
       const { user } = result;
       setUser(user);
+      createUser(user.uid, user?.email || "nouser@example.com")
+        .then((a) => {
+          console.log("create" + a);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
       return user;
     });
   }
